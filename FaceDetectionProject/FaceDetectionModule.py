@@ -26,15 +26,38 @@ class FaceDetector():
                 bboxC = detection.location_data.relative_bounding_box
                 ih, iw, ic = img.shape
                 bbox = int(bboxC.xmin * iw), int(bboxC.ymin * ih), \
-                       int(bboxC.width * iw), int(bboxC.height * ih)
-                cv2.rectangle(img, bbox, (255,0,255), 2)
+                       int(bboxC.width * iw), int(bboxC.height * ih)                
+                #cv2.rectangle(img, bbox, (255,0,255), 2)
                 bboxs.append([id, bbox, detection.score])
-                cv2.putText(img, f'{int(detection.score[0]*100)}%',
+                if draw:
+                    img = self.fancyDraw(img, bbox)
+
+                    cv2.putText(img, f'{int(detection.score[0]*100)}%',
                             (bbox[0], bbox[1]-20), 
                             cv2.FONT_HERSHEY_SIMPLEX,
                             2, (0, 255, 0), 2)
 
         return img, bboxs
+
+
+    def fancyDraw(self, img, bbox, l = 30, t=5, rt=1):
+        x, y, w, h = bbox
+        x1, y1 = x + w, y + h
+
+        cv2.rectangle(img, bbox, (255,0,255), rt)
+        # Top left x, y
+        cv2.line(img, (x, y), (x+l, y), (255,0,255), t)
+        cv2.line(img, (x, y), (x, y+l), (255,0,255), t)
+        # Top right x1, y
+        cv2.line(img, (x1, y), (x1-l, y), (255,0,255), t)
+        cv2.line(img, (x1, y), (x1, y+l), (255,0,255), t)
+        # Bottom left x, y1
+        cv2.line(img, (x, y1), (x+l, y1), (255,0,255), t)
+        cv2.line(img, (x, y1), (x, y1-l), (255,0,255), t)
+        # Botton right x1, y1
+        cv2.line(img, (x1, y1), (x1-l, y1), (255,0,255), t)
+        cv2.line(img, (x1, y1), (x1, y1-l), (255,0,255), t)
+        return img
 
 
 def main():
@@ -44,7 +67,7 @@ def main():
 
     while True:
         success, img = cap.read()
-        img, bboxs = detector.findFaces(img)
+        img, bboxs = detector.findFaces(img, draw=True)
 
         cTime = time.time()
         fps = 1/(cTime - pTime)
