@@ -4,6 +4,7 @@ import numpy as np
 import HandTrackingModule as htm
 import math
 
+
 ########################
 wCam, hCam = 640, 480
 ########################
@@ -14,6 +15,11 @@ cap.set(4, hCam)
 pTime = 0
 
 detector = htm.handDetector(detectionCon=0.7)
+
+# Pycaw stub
+minVol = -60
+maxVol = 0
+
 
 while True:
     success, img = cap.read()
@@ -32,7 +38,14 @@ while True:
         cv2.circle(img, (cx, cy), 15, (255,0,255), cv2.FILLED)
 
         length = math.hypot(x2 - x1, y2 - y1)
-        print(length)
+        #print(length)
+
+        # Hand range 50 - 300
+        # Volume range -65 - 0
+
+        vol = np.interp(length,[50, 300], [minVol, maxVol])
+        print(int(length), vol)
+        #volume.SetMasterVolumeLevel(vol, None)
 
         if (length < 50):
             cv2.circle(img, (cx, cy), 15, (0, 255,0), cv2.FILLED)
