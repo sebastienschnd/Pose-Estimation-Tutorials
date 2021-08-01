@@ -19,8 +19,9 @@ detector = htm.handDetector(detectionCon=0.7)
 # Pycaw stub
 minVol = -60
 maxVol = 0
-
-
+vol = 0
+volBar = 400
+volPer = 0
 while True:
     success, img = cap.read()
     img = detector.findHands(img)
@@ -44,11 +45,18 @@ while True:
         # Volume range -65 - 0
 
         vol = np.interp(length,[50, 300], [minVol, maxVol])
+        volBar = np.interp(length,[50, 300], [400, 150])
+        volPer = np.interp(length,[50, 300], [0, 100])
         print(int(length), vol)
         #volume.SetMasterVolumeLevel(vol, None)
 
         if (length < 50):
             cv2.circle(img, (cx, cy), 15, (0, 255,0), cv2.FILLED)
+
+    cv2.rectangle(img, (50, 150), (85, 400), (0, 255, 0), 3)
+    cv2.rectangle(img, (50, int(volBar)), (85, 400), (0, 255, 0), cv2.FILLED)
+    cv2.putText(img, f'{str(int(volPer))} %', (40, 450), cv2.FONT_HERSHEY_PLAIN, 
+                1, (0, 250, 0), 3)     
 
 
     cTime = time.time()
