@@ -27,16 +27,30 @@ class PoseDetector:
         return img
 
     def getPosition(self, img, draw=True):
-        lmList= []
+        self.lmList= []
         if self.results.pose_landmarks:
             for id, lm in enumerate(self.results.pose_landmarks.landmark):
                 h, w, c = img.shape
                 #print(id, lm)
                 cx, cy = int(lm.x * w), int(lm.y * h)
-                lmList.append([id, cx, cy])
+                self.lmList.append([id, cx, cy])
                 if draw:
                     cv2.circle(img, (cx, cy), 5, (255, 0, 0), cv2.FILLED)
-        return lmList
+        return self.lmList
+    
+    def findAngle(self, img, p1, p2, p3, draw=True):
+        x1, y1 = self.lmList[p1][1:]
+        x2, y2 = self.lmList[p2][1:]
+        x3, y3 = self.lmList[p3][1:]
+        if draw:
+            cv2.line(img,(x1,y1),(x2,y2),(255,255,255),3)
+            cv2.line(img,(x2,y2),(x3,y3),(255,255,255),3)
+            cv2.circle(img, (x1, y1), 10, (0, 0, 255), cv2.FILLED)
+            cv2.circle(img, (x1, y1), 15, (0, 0, 255), 2)
+            cv2.circle(img, (x2, y2), 10, (0, 0, 255), cv2.FILLED)
+            cv2.circle(img, (x2, y2), 15, (0, 0, 255), 2)
+            cv2.circle(img, (x3, y3), 10, (0, 0, 255), cv2.FILLED)
+            cv2.circle(img, (x3, y3), 15, (0, 0, 255), 2)
 
 def main():
     cap = cv2.VideoCapture('videos/a.mp4') #make VideoCapture(0) for webcam
